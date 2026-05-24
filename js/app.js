@@ -106,7 +106,7 @@ function editUsuario(id) {
   form.tipo.value = u.tipo || 'usuario';
   form.nascimento.value = u.nascimento || '';
   form.dataset.editId = id;
-  form.querySelector('button[type=submit]').textContent = 'Salvar Alterações';
+  form.querySelector('button[type=submit]').textContent = '💾 Salvar Alterações';
   switchTab('usuarios', 'cadastro');
   document.getElementById('formUsuario').scrollIntoView({ behavior: 'smooth' });
   showToast('Editando usuário...', 'info');
@@ -206,7 +206,7 @@ function editEndereco(id) {
   form.estado.value = e.estado;
   form.tipoEnd.value = e.tipo;
   form.dataset.editId = id;
-  form.querySelector('button[type=submit]').textContent = 'Salvar Alterações';
+  form.querySelector('button[type=submit]').textContent = '💾 Salvar Alterações';
   switchTab('enderecos', 'cadastro');
   showToast('Editando endereço...', 'info');
 }
@@ -319,7 +319,7 @@ function editLocal(id) {
   form.lat.value = l.lat || '';
   form.lng.value = l.lng || '';
   form.dataset.editId = id;
-  form.querySelector('button[type=submit]').textContent = 'Salvar Alterações';
+  form.querySelector('button[type=submit]').textContent = '💾 Salvar Alterações';
   switchTab('locais', 'cadastro');
   showToast('Editando local...', 'info');
 }
@@ -483,7 +483,7 @@ function exportData() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'elos-backup.json';
+  a.download = 'nexus-backup.json';
   a.click();
   URL.revokeObjectURL(url);
   showToast('Backup exportado com sucesso!');
@@ -503,22 +503,22 @@ function clearAllData() {
 function seedData() {
   if (DB.get('usuarios').length > 0) return;
   const u = [
-    { nome: 'Ana Silva', email: 'ana@email.com', telefone: '(21) 99999-1234', cpf: '123.456.789-00', tipo: 'admin', nascimento: '1995-03-15' },
-    { nome: 'Bruno Costa', email: 'bruno@email.com', telefone: '(21) 98888-5678', cpf: '987.654.321-00', tipo: 'usuario', nascimento: '1990-07-22' },
-    { nome: 'Carla Mendes', email: 'carla@email.com', telefone: '(21) 97777-9012', cpf: '456.789.123-00', tipo: 'moderador', nascimento: '1998-11-30' },
+    { nome: 'Ana Silva', email: 'ana@email.com', telefone: '(11) 4034-7800', cpf: '123.456.789-00', tipo: 'admin', nascimento: '1995-03-15' },
+    { nome: 'Bruno Costa', email: 'bruno@email.com', telefone: '(11) 98888-5678', cpf: '987.654.321-00', tipo: 'usuario', nascimento: '1990-07-22' },
+    { nome: 'Carla Mendes', email: 'carla@email.com', telefone: '(11) 97777-9012', cpf: '456.789.123-00', tipo: 'moderador', nascimento: '1998-11-30' },
   ];
   u.forEach(d => usuarios.save(d));
 
   const e = [
-    { usuario: 'Ana Silva', cep: '01310-100', rua: 'Av. Paulista', numero: '1000', bairro: 'Bela Vista', cidade: 'São Paulo', estado: 'SP', tipo: 'residencial' },
-    { usuario: 'Bruno Costa', cep: '20040-020', rua: 'Av. Rio Branco', numero: '156', bairro: 'Centro', cidade: 'Rio de Janeiro', estado: 'RJ', tipo: 'comercial' },
+    { usuario: 'Ana Silva', cep: '12903-000', rua: 'Av. Major Fernando Valle', numero: '2013', bairro: 'São Miguel', cidade: 'Bragança Paulista', estado: 'SP', tipo: 'comercial' },
+    { usuario: 'Bruno Costa', cep: '12903-000', rua: 'Av. Major Fernando Valle', numero: '2013', bairro: 'São Miguel', cidade: 'Bragança Paulista', estado: 'SP', tipo: 'outro' },
   ];
   e.forEach(d => enderecos.save(d));
 
   const l = [
-    { nome: 'Restaurante Sabor do Brasil', categoria: 'restaurante', endereco: 'Rua das Flores, 50', cidade: 'São Paulo', telefone: '(11) 3333-4444', site: '', descricao: 'Culinária brasileira tradicional', lat: -23.561, lng: -46.656 },
-    { nome: 'Livraria Cultura', categoria: 'loja', endereco: 'Av. Paulista, 2073', cidade: 'São Paulo', telefone: '(11) 3170-4033', site: 'livrariacultura.com.br', descricao: 'Maior livraria do Brasil', lat: -23.562, lng: -46.660 },
-    { nome: 'Hospital São Luiz', categoria: 'saude', endereco: 'Rua Voluntários da Pátria, 77', cidade: 'São Paulo', telefone: '(11) 3394-0000', site: '', descricao: 'Hospital referência', lat: -23.552, lng: -46.635 },
+    { nome: 'IFSP — Campus Bragança Paulista', categoria: 'educacao', endereco: 'Av. Major Fernando Valle, 2013', cidade: 'Bragança Paulista', telefone: '(11) 4034-7800', site: 'https://bra.ifsp.edu.br', descricao: 'Instituto Federal de São Paulo — Campus BRA', lat: -22.9468, lng: -46.5371 },
+    { nome: 'Prefeitura de Bragança Paulista', categoria: 'servico', endereco: 'Praça Anchieta, 1', cidade: 'Bragança Paulista', telefone: '(11) 4035-9000', site: '', descricao: 'Sede da Prefeitura Municipal', lat: -22.9531, lng: -46.5418 },
+    { nome: 'UPA Bragança Paulista', categoria: 'saude', endereco: 'Av. Antônio Frederico Ozanan, s/n', cidade: 'Bragança Paulista', telefone: '(11) 4033-0900', site: '', descricao: 'Unidade de Pronto Atendimento 24h', lat: -22.9510, lng: -46.5480 },
   ];
   l.forEach(d => locais.save(d));
 }
