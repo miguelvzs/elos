@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ELOS — Sistema de Gestão</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a class="nav-brand" href="#" data-nav="home">ELOS</a>
+    <ul class="nav-links">
+      <li><a href="#" data-page="home">Início</a></li>
+      <li><a href="#" data-page="usuarios">Usuários</a></li>
+      <li><a href="#" data-page="enderecos">Endereços</a></li>
+      <li><a href="#" data-page="locais">Locais</a></li>
+      <li><a href="#" data-page="contato">Contato</a></li>
+      <li><a href="#" data-page="sobre">Sobre</a></li>
+    </ul>
+    <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div id="toastContainer"></div>
+
+<div class="page-wrap">
+<main>
+
+  <!-- HOME -->
+  <section class="page-section active" id="page-home">
+    <div class="hero">
+      <h1>ELOS.</h1>
+      <p class="lead">Conecte usuários, endereços e estabelecimentos.<br>Tudo salvo localmente, direto no navegador.</p>
+      <div class="cta-row">
+        <button class="btn btn-blue" data-nav="usuarios">Começar</button>
+        <button class="btn btn-outline" data-nav="locais">Ver Mapa ›</button>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-n" id="stat-usuarios">0</div><div class="stat-l">Usuários</div></div>
+      <div class="stat-card"><div class="stat-n" id="stat-enderecos">0</div><div class="stat-l">Endereços</div></div>
+      <div class="stat-card"><div class="stat-n" id="stat-locais">0</div><div class="stat-l">Estabelecimentos</div></div>
+      <div class="stat-card"><div class="stat-n" id="stat-mensagens">0</div><div class="stat-l">Mensagens</div></div>
+    </div>
+
+    <div class="cards-grid">
+      <div class="module-card" onclick="navigate('usuarios')"><p class="mod-label">Módulo</p><h3>Usuários</h3><p>Cadastre, edite e consulte usuários.</p><span class="mod-arrow">›</span></div>
+      <div class="module-card" onclick="navigate('enderecos')"><p class="mod-label">Módulo</p><h3>Endereços</h3><p>Vincule endereços com busca por CEP.</p><span class="mod-arrow">›</span></div>
+      <div class="module-card" onclick="navigate('locais')"><p class="mod-label">Módulo</p><h3>Estabelecimentos</h3><p>Locais cadastrados no mapa interativo.</p><span class="mod-arrow">›</span></div>
+      <div class="module-card" onclick="navigate('contato')"><p class="mod-label">Módulo</p><h3>Mensagens</h3><p>Envie e consulte mensagens.</p><span class="mod-arrow">›</span></div>
+    </div>
+
+    <div class="data-bar">
+      <span>Dados armazenados em LocalStorage</span>
+      <div>
+        <button class="btn btn-outline btn-sm" onclick="exportData()">Exportar</button>
+        <button class="btn btn-red btn-sm" onclick="clearAllData()">Limpar dados</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- USUÁRIOS -->
+  <section class="page-section" id="page-usuarios">
+    <div class="page-header"><h2>Usuários</h2></div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab-group="usuarios" data-tab-id="cadastro">Cadastrar</button>
+      <button class="tab-btn" data-tab-group="usuarios" data-tab-id="consulta">Consultar</button>
+    </div>
+    <div class="tab-content active" id="usuarios-cadastro" data-tab-content="usuarios">
+      <form id="formUsuario" class="aform">
+        <div class="fgrid">
+          <div class="fg"><label>Nome Completo *</label><input type="text" name="nome" placeholder="João Silva" required /></div>
+          <div class="fg"><label>E-mail *</label><input type="email" name="email" placeholder="joao@email.com" required /></div>
+          <div class="fg"><label>Telefone</label><input type="tel" name="telefone" placeholder="(00) 00000-0000" /></div>
+          <div class="fg"><label>CPF</label><input type="text" name="cpf" placeholder="000.000.000-00" maxlength="14" /></div>
+          <div class="fg"><label>Nascimento</label><input type="date" name="nascimento" /></div>
+          <div class="fg"><label>Tipo</label><select name="tipo"><option value="usuario">Usuário</option><option value="admin">Administrador</option><option value="moderador">Moderador</option></select></div>
+        </div>
+        <div class="factions"><button type="submit" class="btn btn-blue">Cadastrar</button><button type="reset" class="btn btn-outline">Limpar</button></div>
+      </form>
+    </div>
+    <div class="tab-content" id="usuarios-consulta" data-tab-content="usuarios">
+      <input class="sinput" type="text" id="searchUsuario" placeholder="Buscar por nome ou e-mail…" />
+      <div class="twrap"><table><thead><tr><th>Nome</th><th>E-mail</th><th>Telefone</th><th>CPF</th><th>Tipo</th><th>Cadastrado</th><th></th></tr></thead><tbody id="usuariosBody"></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- ENDEREÇOS -->
+  <section class="page-section" id="page-enderecos">
+    <div class="page-header"><h2>Endereços</h2></div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab-group="enderecos" data-tab-id="cadastro">Cadastrar</button>
+      <button class="tab-btn" data-tab-group="enderecos" data-tab-id="consulta">Consultar</button>
+    </div>
+    <div class="tab-content active" id="enderecos-cadastro" data-tab-content="enderecos">
+      <form id="formEndereco" class="aform">
+        <div class="fgrid">
+          <div class="fg"><label>Usuário *</label><input type="text" name="usuarioEnd" id="usuarioEnd" placeholder="Nome do usuário" required /></div>
+          <div class="fg"><label>CEP</label><input type="text" name="cep" id="cepInput" placeholder="00000-000" maxlength="9" /></div>
+          <div class="fg"><label>Rua *</label><input type="text" name="rua" placeholder="Rua das Flores" required /></div>
+          <div class="fg"><label>Número</label><input type="text" name="numero" placeholder="123" /></div>
+          <div class="fg"><label>Complemento</label><input type="text" name="complemento" placeholder="Apto, Bloco…" /></div>
+          <div class="fg"><label>Bairro</label><input type="text" name="bairro" placeholder="Centro" /></div>
+          <div class="fg"><label>Cidade *</label><input type="text" name="cidade" placeholder="São Paulo" required /></div>
+          <div class="fg"><label>Estado</label><select name="estado"><option value="">Selecione</option><option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option></select></div>
+          <div class="fg"><label>Tipo</label><select name="tipoEnd"><option value="residencial">Residencial</option><option value="comercial">Comercial</option><option value="outro">Outro</option></select></div>
+        </div>
+        <div class="factions"><button type="submit" class="btn btn-blue">Cadastrar</button><button type="reset" class="btn btn-outline">Limpar</button></div>
+      </form>
+    </div>
+    <div class="tab-content" id="enderecos-consulta" data-tab-content="enderecos">
+      <input class="sinput" type="text" id="searchEndereco" placeholder="Buscar por rua, cidade ou usuário…" />
+      <div class="twrap"><table><thead><tr><th>Usuário</th><th>Endereço</th><th>Bairro</th><th>Cidade</th><th>UF</th><th>Tipo</th><th></th></tr></thead><tbody id="enderecosBody"></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- LOCAIS -->
+  <section class="page-section" id="page-locais">
+    <div class="page-header"><h2>Estabelecimentos</h2></div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab-group="locais" data-tab-id="cadastro">Cadastrar</button>
+      <button class="tab-btn" data-tab-group="locais" data-tab-id="consulta">Consultar</button>
+      <button class="tab-btn" data-tab-group="locais" data-tab-id="mapa">Mapa</button>
+    </div>
+    <div class="tab-content active" id="locais-cadastro" data-tab-content="locais">
+      <form id="formLocal" class="aform">
+        <div class="fgrid">
+          <div class="fg"><label>Nome *</label><input type="text" name="nomeLocal" placeholder="Restaurante Bom Sabor" required /></div>
+          <div class="fg"><label>Categoria</label><select name="categoria"><option value="restaurante">Restaurante</option><option value="loja">Loja</option><option value="servico">Serviços</option><option value="saude">Saúde</option><option value="educacao">Educação</option><option value="lazer">Lazer</option><option value="outro">Outro</option></select></div>
+          <div class="fg"><label>Endereço *</label><input type="text" name="endLocal" placeholder="Rua, Número" required /></div>
+          <div class="fg"><label>Cidade</label><input type="text" name="cidadeLocal" placeholder="Belo Horizonte" /></div>
+          <div class="fg"><label>Telefone</label><input type="tel" name="telLocal" placeholder="(00) 0000-0000" /></div>
+          <div class="fg"><label>Site</label><input type="url" name="siteLocal" placeholder="https://…" /></div>
+          <div class="fg"><label>Latitude</label><input type="number" name="lat" step="any" placeholder="-23.5505" /></div>
+          <div class="fg"><label>Longitude</label><input type="number" name="lng" step="any" placeholder="-46.6333" /></div>
+          <div class="fg full"><label>Descrição</label><textarea name="descLocal" placeholder="Descreva o estabelecimento…"></textarea></div>
+        </div>
+        <div class="factions"><button type="submit" class="btn btn-blue">Cadastrar</button><button type="reset" class="btn btn-outline">Limpar</button></div>
+      </form>
+    </div>
+    <div class="tab-content" id="locais-consulta" data-tab-content="locais">
+      <input class="sinput" type="text" id="searchLocal" placeholder="Buscar por nome, categoria ou cidade…" />
+      <div class="twrap"><table><thead><tr><th>Nome</th><th>Categoria</th><th>Endereço</th><th>Cidade</th><th>Telefone</th><th></th></tr></thead><tbody id="locaisBody"></tbody></table></div>
+    </div>
+    <div class="tab-content" id="locais-mapa" data-tab-content="locais">
+      <div class="map-card">
+        <div class="map-top"><div><h3>Mapa Interativo</h3><p>Estabelecimentos cadastrados</p></div><button class="btn btn-outline btn-sm" onclick="renderMapMarkers()">Atualizar</button></div>
+        <div id="map"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTATO -->
+  <section class="page-section" id="page-contato">
+    <div class="page-header"><h2>Contato</h2></div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab-group="contato" data-tab-id="enviar">Enviar</button>
+      <button class="tab-btn" data-tab-group="contato" data-tab-id="mensagens">Mensagens</button>
+    </div>
+    <div class="tab-content active" id="contato-enviar" data-tab-content="contato">
+      <div class="contact-layout">
+        <div class="contact-info"><h3>Fale conosco</h3><p>contato@elos.com.br</p><p>(11) 99999-0000</p><p>São Paulo — SP</p><p>Seg–Sex, 9h às 18h</p></div>
+        <form id="formContato" class="aform">
+          <div class="fgrid">
+            <div class="fg"><label>Nome *</label><input type="text" name="nomeContato" placeholder="Nome completo" required /></div>
+            <div class="fg"><label>E-mail *</label><input type="email" name="emailContato" placeholder="email@exemplo.com" required /></div>
+            <div class="fg full"><label>Assunto</label><input type="text" name="assunto" placeholder="Do que se trata?" /></div>
+            <div class="fg full"><label>Mensagem *</label><textarea name="mensagem" placeholder="Escreva sua mensagem…" required></textarea></div>
+          </div>
+          <div class="factions"><button type="submit" class="btn btn-blue" style="width:100%">Enviar Mensagem</button></div>
+        </form>
+      </div>
+    </div>
+    <div class="tab-content" id="contato-mensagens" data-tab-content="contato"><div id="mensagensList"></div></div>
+  </section>
+
+  <!-- SOBRE -->
+  <section class="page-section" id="page-sobre">
+    <div class="page-header"><h2>Sobre</h2></div>
+    <div class="about-grid">
+      <div class="acard"><h3>O Projeto</h3><p>Sistema web desenvolvido como atividade avaliativa em <strong>Desenvolvimento Web</strong>, curso de <strong>Análise e Desenvolvimento de Sistemas</strong>. Dados armazenados via <strong>LocalStorage</strong>, sem necessidade de servidor.</p></div>
+      <div class="acard"><h3>Tecnologias</h3><ul class="tlist"><li>HTML5</li><li>CSS3</li><li>JavaScript puro — map, filter, reduce</li><li>Leaflet.js + OpenStreetMap</li><li>API ViaCEP</li></ul></div>
+      <div class="acard full"><h3>Uso de IA</h3><p>Desenvolvido com auxílio do <strong>Claude (Anthropic)</strong> — assistente atuou no auxílio geral para aprimoramento e otimização do código fonte.</p></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <p class="footer-brand">ELOS</p>
+    <p>Copyright © 2026 ELOS. Atividade Avaliativa 05 · ADS 1º Semestre.</p>
+    <p>Desenvolvido com HTML, CSS e JavaScript puro.</p>
+  </div>
+</footer>
+</div><!-- .page-wrap -->
+
+<script src="js/app.js"></script>
+</body>
+</html>
