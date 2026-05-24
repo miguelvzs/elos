@@ -1,9 +1,4 @@
-// =====================================================
-// ELOS - Sistema de Gerenciamento
-// Lógica principal com LocalStorage
-// =====================================================
-
-// ---- TOAST NOTIFICATIONS ----
+// ---- NOTIFICATIONS ----
 function showToast(msg, type = 'success') {
   const icons = { success: '✅', error: '❌', info: 'ℹ️' };
   const container = document.getElementById('toastContainer');
@@ -243,7 +238,7 @@ function renderEnderecos(search = '') {
   `).join('');
 }
 
-// ---- CEP AUTO-FILL ----
+// ---- CEP (AUTO-PREENCHIMENTO) ----
 async function buscarCEP(cep) {
   cep = cep.replace(/\D/g, '');
   if (cep.length !== 8) return;
